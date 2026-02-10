@@ -27,11 +27,9 @@ DATABASE
 
 # ROUTE
 
-user: localhost:5173
-admin: localhost:5173/admin
-cashier: localhost:5173/cashier
+- user: localhost:5173
+- admin: localhost:5173/admin
 
 # AKUN
 
-user: adem@gmail.com - ademadem1234
-admin: admin@cinema.com - admin123
+- admin: admin@cinema.com - admin123
