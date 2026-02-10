@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>API Test</title>
+  </head>
+  <body>
+    <h1>Testing Schedule API</h1>
+    <button onclick="testAPI()">Test Schedule 100</button>
+    <pre id="output"></pre>
+
+    <script>
+      async function testAPI() {
+        const output = document.getElementById("output");
+        output.textContent = "Loading...";
+
+        try {
+          const response = await fetch("http://localhost:3000/jadwal/100");
+          const data = await response.json();
+
+          const schedule = data.data;
+          const kursis = schedule.studio.kursis;
+          const statusKursis = schedule.statusKursis;
+
+          output.textContent = `
+Total Kursis: ${kursis.length}
+Total StatusKursis: ${statusKursis.length}
+
+First Kursi:
+  id_kursi: ${kursis[0].id_kursi}
+  row: ${kursis[0].row_kursi}
+  number: ${kursis[0].no_kursi}
+
+First StatusKursi:
+  id_kursi: ${statusKursis[0].id_kursi}
+  status_kursi: ${statusKursis[0].status_kursi}
+
+Match Test:
+  IDs match: ${statusKursis[0].id_kursi === kursis[0].id_kursi}
+  Status is TERSEDIA: ${statusKursis[0].status_kursi === "TERSEDIA"}
+  
+Full StatusKursi object:
+${JSON.stringify(statusKursis[0], null, 2)}
+                `;
+        } catch (error) {
+          output.textContent = "Error: " + error.message;
+        }
+      }
+    </script>
+  </body>
+</html>

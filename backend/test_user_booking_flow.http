@@ -1,0 +1,350 @@
+### Cinema Management System - User Booking Flow Test
+### Complete flow: Register → Login → Browse → Book → Payment → Confirm
+### Uses new authentication system with USR_ token prefix
+
+@baseUrl = http://localhost:3000
+
+### ========================================
+### 1. USER REGISTRATION & LOGIN
+### ========================================
+
+### 1.1 Register New User
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+
+{
+  "email": "customer@test.com",
+  "password": "customer123",
+  "nama_pelanggan": "Customer Test"
+}
+
+### Response will contain USR_ prefixed token
+### Copy the token from response and paste below
+@userToken = USR_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+### 1.2 User Login (if already registered)
+POST {{baseUrl}}/user/login
+Content-Type: application/json
+
+{
+  "email": "customer@test.com",
+  "password": "customer123"
+}
+
+### 1.3 Get User Profile
+GET {{baseUrl}}/user/profile
+Authorization: Bearer {{userToken}}
+
+### ========================================
+### 2. BROWSE AVAILABLE CONTENT
+### ========================================
+
+### 2.1 Get All Films
+GET {{baseUrl}}/films
+
+### 2.2 Get Film Details (replace :id with actual film ID)
+GET {{baseUrl}}/films/1
+
+### 2.3 Get All Cabang (Branches)
+GET {{baseUrl}}/cabang
+
+### 2.4 Get All Jadwal (Schedules)
+### This will show available schedules with prices
+GET {{baseUrl}}/jadwal
+
+### 2.5 Get Jadwal by Film ID (filter by film)
+GET {{baseUrl}}/jadwal?id_film=1
+
+### 2.6 Get Specific Jadwal Details
+GET {{baseUrl}}/jadwal/1
+
+### 2.7 Get Available Seats for Studio
+### Replace :id_studio with actual studio ID from jadwal
+GET {{baseUrl}}/kursi/studio/1
+
+### ========================================
+### 3. CREATE ORDER (BOOK TICKETS)
+### ========================================
+
+### 3.1 Create Order with Single Ticket
+POST {{baseUrl}}/payment/order
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 1,
+      "id_kursi": 1
+    }
+  ]
+}
+
+### Save order ID from response
+@orderId = 1
+
+### 3.2 Create Order with Multiple Tickets
+POST {{baseUrl}}/payment/order
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 1,
+      "id_kursi": 2
+    },
+    {
+      "id_jadwal": 1,
+      "id_kursi": 3
+    },
+    {
+      "id_jadwal": 1,
+      "id_kursi": 4
+    }
+  ]
+}
+
+### 3.3 Get Order Summary
+GET {{baseUrl}}/payment/order/{{orderId}}
+Authorization: Bearer {{userToken}}
+
+### ========================================
+### 4. PROCESS PAYMENT
+### ========================================
+
+### 4.1 Get Available Payment Methods
+GET {{baseUrl}}/metode-pembayaran
+
+### 4.2 Process Payment with Virtual Account (BCA)
+POST {{baseUrl}}/payment/process
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "id_order": {{orderId}},
+  "id_metode_pembayaran": 1
+}
+
+### 4.3 Process Payment with E-Wallet (GoPay)
+POST {{baseUrl}}/payment/process
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "id_order": {{orderId}},
+  "id_metode_pembayaran": 3
+}
+
+### 4.4 Get Payment Info
+GET {{baseUrl}}/payment/info/{{orderId}}
+Authorization: Bearer {{userToken}}
+
+### ========================================
+### 5. CONFIRM PAYMENT
+### ========================================
+
+### 5.1 Confirm Payment (User clicks "Saya Sudah Bayar")
+POST {{baseUrl}}/payment/confirm/{{orderId}}
+Authorization: Bearer {{userToken}}
+
+### ========================================
+### 6. VIEW TICKETS & ORDERS
+### ========================================
+
+### 6.1 Get All User Orders
+GET {{baseUrl}}/tickets/orders
+Authorization: Bearer {{userToken}}
+
+### 6.2 Get All User Tickets
+GET {{baseUrl}}/tickets
+Authorization: Bearer {{userToken}}
+
+### 6.3 Get Specific Ticket Details
+GET {{baseUrl}}/tickets/1
+Authorization: Bearer {{userToken}}
+
+### 6.4 Get Ticket Status
+GET {{baseUrl}}/tickets/1/status
+Authorization: Bearer {{userToken}}
+
+### ========================================
+### 7. CANCEL ORDER (OPTIONAL)
+### ========================================
+
+### 7.1 Cancel Order (before payment confirmation)
+DELETE {{baseUrl}}/payment/order/{{orderId}}
+Authorization: Bearer {{userToken}}
+
+### ========================================
+### 8. ERROR SCENARIOS
+### ========================================
+
+### 8.1 Book Already Booked Seat (should fail)
+POST {{baseUrl}}/payment/order
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 1,
+      "id_kursi": 1
+    }
+  ]
+}
+
+### 8.2 Book Past Schedule (should fail)
+POST {{baseUrl}}/payment/order
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 999,
+      "id_kursi": 1
+    }
+  ]
+}
+
+### 8.3 Book Non-existent Seat (should fail)
+POST {{baseUrl}}/payment/order
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 1,
+      "id_kursi": 99999
+    }
+  ]
+}
+
+### 8.4 Access Without Token (should fail - 401)
+GET {{baseUrl}}/user/profile
+
+### 8.5 Access with Admin Token (should fail - 403)
+### First get admin token
+POST {{baseUrl}}/admin/login
+Content-Type: application/json
+
+{
+  "email": "admin@cinema.com",
+  "password": "admin123"
+}
+
+@adminToken = ADM_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+### Try to create order with admin token (should fail)
+POST {{baseUrl}}/payment/order
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 1,
+      "id_kursi": 5
+    }
+  ]
+}
+
+### 8.6 Confirm Already Confirmed Payment (should fail)
+POST {{baseUrl}}/payment/confirm/{{orderId}}
+Authorization: Bearer {{userToken}}
+
+### 8.7 Process Payment for Expired Order (should fail)
+### Wait 15+ minutes after creating order, then try to process payment
+POST {{baseUrl}}/payment/process
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "id_order": {{orderId}},
+  "id_metode_pembayaran": 1
+}
+
+### ========================================
+### 9. COMPLETE BOOKING FLOW EXAMPLE
+### ========================================
+
+### Step 1: Register/Login User
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+
+{
+  "email": "newuser@test.com",
+  "password": "user123",
+  "nama_pelanggan": "New User"
+}
+
+### Step 2: Browse Films
+GET {{baseUrl}}/films
+
+### Step 3: Check Schedules for Film
+GET {{baseUrl}}/jadwal?id_film=1
+
+### Step 4: Check Available Seats
+GET {{baseUrl}}/kursi/studio/1
+
+### Step 5: Create Order
+POST {{baseUrl}}/payment/order
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 1,
+      "id_kursi": 10
+    },
+    {
+      "id_jadwal": 1,
+      "id_kursi": 11
+    }
+  ]
+}
+
+### Step 6: Get Payment Methods
+GET {{baseUrl}}/metode-pembayaran
+
+### Step 7: Process Payment
+POST {{baseUrl}}/payment/process
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "id_order": 1,
+  "id_metode_pembayaran": 1
+}
+
+### Step 8: Get Payment Info (VA/QR Code)
+GET {{baseUrl}}/payment/info/1
+Authorization: Bearer {{userToken}}
+
+### Step 9: Confirm Payment
+POST {{baseUrl}}/payment/confirm/1
+Authorization: Bearer {{userToken}}
+
+### Step 10: View Tickets
+GET {{baseUrl}}/tickets/orders
+Authorization: Bearer {{userToken}}
+
+### ========================================
+### NOTES:
+### ========================================
+### - User token has USR_ prefix and expires in 7 days
+### - Order expires in 15 minutes if not paid
+### - Seat status: TERSEDIA → DIPESAN (after order) → TERJUAL (after payment)
+### - Ticket status: PENDING → CONFIRMED (after payment)
+### - Order status: PENDING → PAID (after confirmation)
+### - Payment status: PENDING → SUCCESS (after confirmation)
+### - Cannot book past schedules (validated by backend)
+### - Cannot book already booked/sold seats
+### - Price is calculated automatically based on:
+###   tanggal → tipe hari → aturan harga (cabang + tipe studio + tipe hari)
+### - User cannot manipulate price (no id_tipe_hari in request)
+### - Admin token (ADM_) cannot access user endpoints
+### - User token (USR_) cannot access admin endpoints

@@ -1,0 +1,278 @@
+### ========================================
+### COMPLETE BOOKING FLOW TEST
+### From Login to Payment
+### ========================================
+
+### 1. Register User (if not exists)
+POST http://localhost:3000/user/register
+Content-Type: application/json
+
+{
+  "nama_pelanggan": "Test User",
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+### 2. Login User
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+# Save the token from response and use it in subsequent requests
+# Example: @token = <paste_token_here>
+
+### 3. Get All Films (Browse Films)
+GET http://localhost:3000/api/films
+
+### 4. Get Specific Film Details
+GET http://localhost:3000/api/films/1
+
+### 5. Get Jadwal for Specific Film (Select Schedule)
+GET http://localhost:3000/api/jadwal?id_film=1
+
+### 6. Get Jadwal by ID with Seat Availability (Select Seats)
+GET http://localhost:3000/api/jadwal/1
+
+### 7. Get Payment Methods (Payment Page)
+GET http://localhost:3000/api/metode-pembayaran
+
+### 8. Create Order (Submit Booking)
+POST http://localhost:3000/payment/order
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY5MDA2NDYxLCJleHAiOjE3Njk2MTEyNjF9.8XUJ9E1rX1ltnbnHYky8owplWpAIPsoy9_iXKC49jGc
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 86,
+      "id_kursi": 1924,
+      "id_tipe_hari": 1
+    }
+  ]
+}
+
+### 9. Process Payment
+POST http://localhost:3000/api/payments/process
+Content-Type: application/json
+Authorization: Bearer <paste_your_token_here>
+
+{
+  "id_order": 1,
+  "id_metode_pembayaran": 1
+}
+
+### 10. Get User Tickets (My Tickets)
+GET http://localhost:3000/api/tickets/my-tickets
+Authorization: Bearer <paste_your_token_here>
+
+### ========================================
+### ALTERNATIVE FLOW - Check Specific Resources
+### ========================================
+
+### Get All Cabang (Branches)
+GET http://localhost:3000/api/cabang
+
+### Get All Studios
+GET http://localhost:3000/api/studios
+
+### Get Tipe Hari (Day Types)
+GET http://localhost:3000/api/tipe-hari
+
+### Get Aturan Harga (Price Rules)
+GET http://localhost:3000/api/aturan-harga
+
+### Get Specific Price for Cabang + Tipe Studio + Tipe Hari
+GET http://localhost:3000/api/aturan-harga/specific?id_cabang=1&id_tipe_studio=1&id_tipe_hari=1
+
+### ========================================
+### ADMIN ENDPOINTS (Requires Admin Token)
+### ========================================
+
+### Admin Login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@cinema.com",
+  "password": "admin123"
+}
+
+### Create Multiple Jadwal with Multiple Time Slots
+POST http://localhost:3000/api/jadwal
+Content-Type: application/json
+Authorization: Bearer <paste_admin_token_here>
+
+{
+  "id_film": 1,
+  "id_studio": 1,
+  "tanggal": "2026-01-25",
+  "jam_tayang": [
+    {
+      "jam_mulai": "12:00",
+      "jam_selesai": "14:30"
+    },
+    {
+      "jam_mulai": "15:00",
+      "jam_selesai": "17:30"
+    },
+    {
+      "jam_mulai": "18:00",
+      "jam_selesai": "20:30"
+    }
+  ]
+}
+
+### ========================================
+### COMPLETE BOOKING FLOW EXAMPLE
+### Step by Step with Sample Data
+### ========================================
+
+### STEP 1: Login as User
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+# Response will contain: { "token": "eyJhbGc...", "user": {...} }
+# Copy the token and use it below
+
+### STEP 2: Browse Films
+GET http://localhost:3000/api/films
+
+# Pick a film, note the id_film (e.g., 1)
+
+### STEP 3: Get Schedules for Selected Film
+GET http://localhost:3000/api/jadwal?id_film=1
+
+# Response shows all schedules with:
+# - tanggal, jam_mulai, jam_selesai
+# - studio info (cabang, tipe_studio)
+# - harga_tiket (price per ticket)
+# - tipe_hari (day type)
+
+### STEP 4: Get Seat Availability for Selected Schedule
+GET http://localhost:3000/api/jadwal/1
+
+# Response shows:
+# - Film details
+# - Studio details with all kursis (seats)
+# - statusKursis (seat status: TERSEDIA, DIPESAN, TERJUAL)
+# - seatAvailability (total, available, occupied)
+# - harga_tiket
+
+### STEP 5: Create Order with Selected Seats
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 1,
+      "id_kursi": 5
+    },
+    {
+      "id_jadwal": 1,
+      "id_kursi": 6
+    }
+  ]
+}
+
+# Response will contain:
+# - id_order
+# - kode_order (order code)
+# - total_harga (subtotal)
+# - biaya_layanan (service fee: 2500)
+# - grand_total (total to pay)
+# - expired_at (payment deadline: 15 minutes)
+# - tikets array with kode_tiket for each ticket
+
+### STEP 6: Get Payment Methods
+GET http://localhost:3000/api/metode-pembayaran
+
+# Pick a payment method, note the id_metode_pembayaran
+
+### STEP 7: Process Payment
+POST http://localhost:3000/api/payments/process
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "id_order": 1,
+  "id_metode_pembayaran": 1
+}
+
+# Response will contain:
+# - Payment details
+# - Virtual Account number or QR code (if applicable)
+# - Order status updated to PAID
+# - Ticket status updated to CONFIRMED
+
+### STEP 8: View My Tickets
+GET http://localhost:3000/api/tickets/my-tickets
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# Response shows all user's tickets with:
+# - kode_tiket (ticket code)
+# - Film details
+# - Schedule details (date, time)
+# - Seat details (row, number)
+# - Status (PENDING, CONFIRMED, CANCELLED)
+
+### ========================================
+### ERROR SCENARIOS TO TEST
+### ========================================
+
+### Try to book already sold seat
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 1,
+      "id_kursi": 1
+    }
+  ]
+}
+
+# Should return error if seat is already TERJUAL or DIPESAN
+
+### Try to pay expired order
+POST http://localhost:3000/api/payments/process
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "id_order": 999,
+  "id_metode_pembayaran": 1
+}
+
+# Should return error if order is expired or not found
+
+### Try to create jadwal with conflicting time slot
+POST http://localhost:3000/api/jadwal
+Content-Type: application/json
+Authorization: Bearer <admin_token>
+
+{
+  "id_film": 1,
+  "id_studio": 1,
+  "tanggal": "2026-01-25",
+  "jam_tayang": [
+    {
+      "jam_mulai": "12:00",
+      "jam_selesai": "14:30"
+    }
+  ]
+}
+
+# Should return 409 conflict if time slot already exists

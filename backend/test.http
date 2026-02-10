@@ -1,0 +1,124 @@
+
+POST http://localhost:3000/user/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "nama_pelanggan": "John Chena"
+}
+
+###
+POST http://localhost:3000/user/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "nama_pelanggan": "John Chena"
+}
+###
+
+POST http://localhost:3000/user/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "user@example.com",
+    "password": "password123"
+}
+
+
+###
+POST http://localhost:3000/films
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzODkwNywiZXhwIjoxNzY3ODQzNzA3fQ.ach79Fj3ye8kv2mZ1H0GBzOg0dXe57l14TvzMQH3IVQ
+Content-Type: application/json
+
+{
+  "title": "Avengers: Endgame",
+  "genre": "Action, Sci-Fi",
+  "duration": 181,
+  "posterUrl": "https://example.com/poster.jpg",
+  "rating": 8.4,
+  "description": "Epic conclusion",
+  "releaseDate": "2024-04-26"
+}
+
+###
+POST http://localhost:3000/films
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTUyOSwiZXhwIjoxNzY3ODQ0MzI5fQ.WOU-47xU3EGGAjeRXNWRsqj7kJ-Kqs6E4bZbO-PO0k8
+Content-Type: application/json
+
+{
+    "title": "Spider-Man: No Way Home",
+    "genre": "Action, Adventure, Sci-Fi",
+    "duration": 148,
+    "posterUrl": "https://example.com/spiderman.jpg",
+    "rating": 8.2,
+    "description": "Multiverse chaos brings old enemies back",
+    "releaseDate": "2021-12-17"
+}
+
+###
+GET http://localhost:3000/films/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTM5OCwiZXhwIjoxNzY3ODQ0MTk4fQ.CsyrPsqFdExpip5tpA7h3hKsU9yeR4EE6DetkdSDFEY
+Content-Type: application/json
+
+###
+GET http://localhost:3000/films
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTM5OCwiZXhwIjoxNzY3ODQ0MTk4fQ.CsyrPsqFdExpip5tpA7h3hKsU9yeR4EE6DetkdSDFEY
+Content-Type: application/json
+
+###
+GET http://localhost:3000/films/genre?genre=Adventure
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTM5OCwiZXhwIjoxNzY3ODQ0MTk4fQ.CsyrPsqFdExpip5tpA7h3hKsU9yeR4EE6DetkdSDFEY
+Content-Type: application/json
+
+###
+PUT http://localhost:3000/films/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTM5OCwiZXhwIjoxNzY3ODQ0MTk4fQ.CsyrPsqFdExpip5tpA7h3hKsU9yeR4EE6DetkdSDFEY
+Content-Type: application/json
+
+{
+    "duration": 180
+}
+
+###
+DELETE http://localhost:3000/films/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTM5OCwiZXhwIjoxNzY3ODQ0MTk4fQ.CsyrPsqFdExpip5tpA7h3hKsU9yeR4EE6DetkdSDFEY
+
+###
+POST http://localhost:3000/cinemas
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTUyOSwiZXhwIjoxNzY3ODQ0MzI5fQ.WOU-47xU3EGGAjeRXNWRsqj7kJ-Kqs6E4bZbO-PO0k8
+Content-Type: application/json
+
+{
+  "name": "Cinema XXI",
+  "location": "Bandung",
+  "type": "IMAX",
+  "capacity": 150
+}
+
+###
+GET http://localhost:3000/cinemas/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTM5OCwiZXhwIjoxNzY3ODQ0MTk4fQ.CsyrPsqFdExpip5tpA7h3hKsU9yeR4EE6DetkdSDFEY
+Content-Type: application/json
+
+###
+PUT http://localhost:3000/cinemas/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTM5OCwiZXhwIjoxNzY3ODQ0MTk4fQ.CsyrPsqFdExpip5tpA7h3hKsU9yeR4EE6DetkdSDFEY
+Content-Type: application/json
+
+{
+    "location": "Bali"
+}
+
+###
+DELETE http://localhost:3000/cinemas/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2NzIzOTM5OCwiZXhwIjoxNzY3ODQ0MTk4fQ.CsyrPsqFdExpip5tpA7h3hKsU9yeR4EE6DetkdSDFEY
+
+
+
+

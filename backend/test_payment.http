@@ -1,0 +1,106 @@
+# Payment System & Checkout - Test Scenarios
+
+## Prerequisites
+1. Make sure you have a valid JWT token from login
+2. Make sure you have existing data: jadwal, kursi, tipe_hari, metode_pembayaran
+
+---
+
+## Test 1: Create Order with Multiple Tickets
+
+### Create Order (POST /api/payment/order)
+POST http://localhost:3000/payment/order
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 4,
+      "id_kursi": 8,
+      "id_tipe_hari": 1
+    },
+    {
+      "id_jadwal": 4,
+      "id_kursi": 9,
+      "id_tipe_hari": 1
+    }
+  ]
+}
+
+
+## Test 2: Get Order Summary
+
+### Get Order Summary (GET /api/payment/order/:id)
+GET http://localhost:3000/payment/order/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+
+---
+
+## Test 3: Process Payment
+
+### Process Payment (POST /api/payment/process)
+POST http://localhost:3000/payment/process
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "id_order": 3,
+  "id_metode_pembayaran": 1
+}
+
+
+
+## Test 4: Get Payment Info
+
+### Get Payment Info (GET /api/payment/info/:orderId)
+GET http://localhost:3000/api/payment/info/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+
+---
+
+## Test 5: Confirm Payment (Admin/Callback)
+
+### Confirm Payment (POST /api/payment/confirm/:id)
+POST http://localhost:3000/payment/confirm/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+
+---
+
+## Test 6: Get User Orders
+
+### Get User Orders (GET /api/tickets/orders)
+GET http://localhost:3000/tickets/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+
+---
+
+## Test 7: Cancel Order
+
+### Cancel Order (DELETE /api/payment/order/:id)
+DELETE http://localhost:3000/api/payment/order/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+
+---
+
+## Additional Tests
+
+### Create Metode Pembayaran (Admin)
+POST http://localhost:3000/api/metode-pembayaran
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "metode_pembayaran": "Transfer Bank BCA",
+  "deskripsi": "Transfer ke Virtual Account BCA"
+}
+
+### Create Metode Pembayaran QRIS
+POST http://localhost:3000/api/metode-pembayaran
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "metode_pembayaran": "QRIS",
+  "deskripsi": "Pembayaran menggunakan QR Code"
+}

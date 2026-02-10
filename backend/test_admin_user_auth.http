@@ -1,0 +1,179 @@
+### Cinema Management System - Admin & User Authentication Test
+### Test file for separate admin and user authentication
+
+@baseUrl = http://localhost:3000
+
+### ========================================
+### 1. ADMIN AUTHENTICATION
+### ========================================
+
+### 1.1 Register Admin (Manual - requires existing admin token or direct DB insert)
+### First admin should be created manually in database
+### INSERT INTO admin (nama_admin, email, password, createdAt, updatedAt) 
+### VALUES ('Super Admin', 'admin@cinema.com', '$2a$10$hashedpassword', NOW(), NOW());
+
+### 1.2 Admin Login
+POST {{baseUrl}}/admin/login
+Content-Type: application/json
+
+{
+  "email": "admin@cinema.com",
+  "password": "admin123"
+}
+
+### Save admin token from response
+@adminToken = ADM_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+### 1.3 Get Admin Profile
+GET {{baseUrl}}/admin/profile
+Authorization: Bearer {{adminToken}}
+
+### 1.4 Update Admin Profile
+PUT {{baseUrl}}/admin/profile
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nama_admin": "Super Admin Updated"
+}
+
+### ========================================
+### 2. USER AUTHENTICATION
+### ========================================
+
+### 2.1 User Register
+POST {{baseUrl}}/user/register
+Content-Type: application/json
+
+{
+  "email": "user@test.com",
+  "password": "user123",
+  "nama_pelanggan": "Test User"
+}
+
+### Save user token from response
+@userToken = USR_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+### 2.2 User Login
+POST {{baseUrl}}/user/login
+Content-Type: application/json
+
+{
+  "email": "user@test.com",
+  "password": "user123"
+}
+
+### 2.3 Get User Profile
+GET {{baseUrl}}/user/profile
+Authorization: Bearer {{userToken}}
+
+### 2.4 Update User Profile
+PUT {{baseUrl}}/user/profile
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "nama_pelanggan": "Test User Updated"
+}
+
+### ========================================
+### 3. AUTHORIZATION TESTS
+### ========================================
+
+### 3.1 Admin accessing admin-only endpoint (should work)
+POST {{baseUrl}}/films
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nama_film": "Test Film",
+  "durasi": 120,
+  "genre": "Action",
+  "batas_umur": "13+"
+}
+
+### 3.2 User accessing admin-only endpoint (should fail - 403)
+POST {{baseUrl}}/films
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "nama_film": "Test Film",
+  "durasi": 120,
+  "genre": "Action",
+  "batas_umur": "13+"
+}
+
+### 3.3 User accessing user endpoint (should work)
+GET {{baseUrl}}/tickets/orders
+Authorization: Bearer {{userToken}}
+
+### 3.4 Admin accessing user endpoint (should fail - 403)
+GET {{baseUrl}}/tickets/orders
+Authorization: Bearer {{adminToken}}
+
+### 3.5 No token (should fail - 401)
+GET {{baseUrl}}/admin/profile
+
+### 3.6 Invalid token (should fail - 401)
+GET {{baseUrl}}/admin/profile
+Authorization: Bearer INVALID_TOKEN
+
+### ========================================
+### 4. TOKEN PREFIX VALIDATION
+### ========================================
+
+### 4.1 Admin token without ADM_ prefix on admin endpoint (should fail)
+GET {{baseUrl}}/admin/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+### 4.2 User token without USR_ prefix on user endpoint (should fail)
+GET {{baseUrl}}/user/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+### ========================================
+### 5. CROSS-AUTHENTICATION TESTS
+### ========================================
+
+### 5.1 Admin token on user-only endpoint (should fail)
+POST {{baseUrl}}/payment/order
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "tickets": [
+    {
+      "id_jadwal": 1,
+      "id_kursi": 1
+    }
+  ]
+}
+
+### 5.2 User token on admin-only endpoint (should fail)
+DELETE {{baseUrl}}/films/1
+Authorization: Bearer {{userToken}}
+
+### ========================================
+### 6. TOKEN EXPIRY TESTS
+### ========================================
+
+### 6.1 Admin token should expire in 4 hours
+### Wait 4+ hours and try:
+GET {{baseUrl}}/admin/profile
+Authorization: Bearer {{adminToken}}
+
+### 6.2 User token should expire in 7 days
+### Wait 7+ days and try:
+GET {{baseUrl}}/user/profile
+Authorization: Bearer {{userToken}}
+
+### ========================================
+### NOTES:
+### ========================================
+### - Admin tokens have ADM_ prefix and expire in 4 hours
+### - User tokens have USR_ prefix and expire in 7 days
+### - Admin tokens contain id_admin field
+### - User tokens contain id_pelanggan field
+### - No explicit "role" or "type" field in JWT payload
+### - Separate JWT secrets for admin and user
+### - Cross-authentication is prevented at middleware level

@@ -1,0 +1,244 @@
+
+
+
+### Register User
+POST http://localhost:3000/user/register
+Content-Type: application/json
+
+{
+  "email": "buyer@example.com",
+  "password": "password123",
+  "nama_pelanggan": "ADE"
+}
+
+
+### Login
+
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+  "email": "buyer@example.com",
+  "password": "password123"
+}
+
+
+### Create Film (Admin)
+
+
+POST http://localhost:3000/films
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "nama_film": "Avengers: Endgame",
+  "durasi": 181,
+  "genre": "Action, Sci-Fi",
+  "batas_umur": "13+",
+  "sutradara": "Anthony Russo, Joe Russo",
+  "publisher": "Marvel Studios",
+  "poster_url": "https://example.com/poster.jpg",
+  "deskripsi": "Epic conclusion to the Infinity Saga",
+  "tanggal_rilis": "2024-04-26"
+}
+
+
+### Create Cabang (Admin)
+
+
+POST http://localhost:3000/cabang
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "nama_cabang": "Cinema XXI Grand Indonesia",
+  "alamat": "Jl. MH Thamrin No.1, Jakarta Pusat"
+}
+
+
+
+
+
+### Create Tipe Studio (Admin)
+
+POST http://localhost:3000/tipe-studio
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "tipe_studio": "VIP",
+  "deskripsi": "Premium large format with immersive sound"
+}
+
+
+### Create Studio (Admin)
+POST http://localhost:3000/studios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "id_cabang": 1,
+  "no_studio": "1",
+  "id_tipe_studio": 1,
+  "kapasitas_total": 100
+}
+
+
+### Bulk Create Kursi (Admin)
+
+
+POST http://localhost:3000/kursi/bulk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "id_studio": 4,
+  "rows": ["A", "B", "C", "D", "E"],
+  "seatsPerRow": 20
+}
+
+### GET KURSI BERDASARKAN ID STUDIO
+GET http://localhost:3000/kursi/studio/4
+
+### Create Jadwal (Admin)
+
+
+POST http://localhost:3000/jadwal
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "id_film": 1,
+  "id_studio": 6,
+  "tanggal": "2026-01-25",
+  "jam_mulai": "14:00:00",
+  "jam_selesai": "17:00:00"
+}
+
+### Create Tipe Hari (Admin)
+POST http://localhost:3000/tipe-hari
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "tipe_hari": "Weekday",
+  "deskripsi": "Hari kerja dari Senin sampai Jumat"
+}
+
+### Create Aturan Harga (Admin)
+POST http://localhost:3000/aturan-harga
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "id_cabang": 1,
+  "id_tipe_studio": 1,
+  "id_tipe_hari": 1,
+  "harga": 50000
+
+}
+
+### delete aturan harga
+DELETE http://localhost:3000/aturan-harga/6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+
+
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
+# TEST GET
+
+### Get All Films
+GET http://localhost:3000/films
+
+### Get Film by ID
+GET http://localhost:3000/films/1
+
+### Get All Cabang
+GET http://localhost:3000/cabang
+
+### Get Cabang by ID
+GET http://localhost:3000/cabang/1
+
+### Get All Tipe Studio
+GET http://localhost:3000/tipe-studio
+
+### Get Tipe Studio by ID
+GET http://localhost:3000/tipe-studio/1
+
+### Get All Studio
+GET http://localhost:3000/studios
+
+### Get Studio by ID
+GET http://localhost:3000/studios/1
+
+### Get All Kursi
+GET http://localhost:3000/kursi
+
+### Get Kursi by ID
+GET http://localhost:3000/kursi/1
+
+### Get All Jadwal
+GET http://localhost:3000/jadwal
+
+### Get Jadwal by ID
+GET http://localhost:3000/jadwal/1
+
+### Get All Tipe Hari
+GET http://localhost:3000/tipe-hari
+
+### Get Tipe Hari by ID
+GET http://localhost:3000/tipe-hari/1
+
+### Get All Aturan Harga
+GET http://localhost:3000/aturan-harga
+
+### Get Aturan Harga by ID
+GET http://localhost:3000/aturan-harga/1
+
+
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# TEST USER
+
+### Book Tiket
+POST http://localhost:3000/tickets/book
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJidXllckBleGFtcGxlLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjE5MTA2LCJleHAiOjE3NjkyMjM5MDZ9.YOAjChvY41BMkqR2AXTN1EUFMPjjgFHmcaAcdE5v3xE
+Content-Type: application/json
+
+{
+  "id_jadwal": 5,
+  "id_kursi": 14,
+  "id_tipe_hari": 1,
+  "id_metode_pembayaran": 1
+}
+
+### metode pembayaran
+POST http://localhost:3000/metode-pembayaran
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "metode_pembayaran": "Transfer Bank",
+  "deskripsi": "Pembayaran melalui transfer bank (BCA, BRI, Mandiri)",
+  "aktif": true
+}
+
+### get ticket
+GET http://localhost:3000/tickets/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJidXllckBleGFtcGxlLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjE5MTA2LCJleHAiOjE3NjkyMjM5MDZ9.YOAjChvY41BMkqR2AXTN1EUFMPjjgFHmcaAcdE5v3xE
+
+### get ticket by id
+GET http://localhost:3000/tickets/7
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+
+### pembayaran
+
+POST http://localhost:3000/payment/checkout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJidXllckBleGFtcGxlLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzY4NjE5MTA2LCJleHAiOjE3NjkyMjM5MDZ9.YOAjChvY41BMkqR2AXTN1EUFMPjjgFHmcaAcdE5v3xE
+Content-Type: application/json
+
+{
+  "id_tiket": 3,
+  "id_metode_pembayaran": 1
+}

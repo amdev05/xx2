@@ -1,0 +1,44 @@
+### Test Bulk Create Kursi - OLD FORMAT (Uniform)
+POST http://localhost:3000/kursi/bulk
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2OTQwNDI2NiwiZXhwIjoxNzcwMDA5MDY2fQ.kNkBOp0202wBWUfziXWz57EzwRQ-Q0ZfJFhJYF1fxMw
+
+{
+  "id_studio": 3,
+  "rows": ["A", "B", "C"],
+  "seatsPerRow": 30
+}
+
+### Test Bulk Create Kursi - NEW FORMAT (Custom)
+POST http://localhost:3000/kursi/bulk
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2OTQwNDI2NiwiZXhwIjoxNzcwMDA5MDY2fQ.kNkBOp0202wBWUfziXWz57EzwRQ-Q0ZfJFhJYF1fxMw
+
+{
+  "id_studio": 2,
+  "rowsConfig": {
+    "A": 30,
+    "B": 27,
+    "C": 24,
+    "D": 20,
+    "E": 15
+  }
+}
+
+### Test UPDATE Configuration (Smart Sync)
+PUT http://localhost:3000/kursi/studio/2/config
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2OTQwNDI2NiwiZXhwIjoxNzcwMDA5MDY2fQ.kNkBOp0202wBWUfziXWz57EzwRQ-Q0ZfJFhJYF1fxMw
+
+{
+  "rowsConfig": {
+    "A": 25,
+    "B": 27,
+    "C": 30,
+    "F": 20
+  }
+}
+
+### Get Kursi by Studio
+GET http://localhost:3000/kursi/studio/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2OTQwNDI2NiwiZXhwIjoxNzcwMDA5MDY2fQ.kNkBOp0202wBWUfziXWz57EzwRQ-Q0ZfJFhJYF1fxMw

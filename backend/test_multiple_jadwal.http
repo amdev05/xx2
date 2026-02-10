@@ -1,0 +1,59 @@
+### Test Multiple Time Slots - Create Jadwal with Multiple Showtimes
+POST http://localhost:3000/jadwal
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2ODYxNzMxMywiZXhwIjoxNzY5MjIyMTEzfQ.9L24Z69P6qPtXRrDtORJ78qHrTx_or05qkpJkiEV7Ng
+Content-Type: application/json
+
+{
+  "id_film": 1,
+  "id_studio": 2,
+  "tanggal": "2026-01-27",
+  "jam_tayang": [
+    {
+      "jam_mulai": "12:00",
+      "jam_selesai": "14:30"
+    },
+    {
+      "jam_mulai": "15:00",
+      "jam_selesai": "17:30"
+    },
+    {
+      "jam_mulai": "18:00",
+      "jam_selesai": "20:30"
+    }
+  ]
+}
+
+### Test Single Time Slot (Backward Compatibility)
+POST http://localhost:3000/api/jadwal
+Content-Type: application/json
+
+{
+  "id_film": 1,
+  "id_studio": 1,
+  "tanggal": "2026-01-26",
+  "jam_mulai": "19:00",
+  "jam_selesai": "21:30"
+}
+
+### Test Conflict Detection - Try to create duplicate time slot
+POST http://localhost:3000/api/jadwal
+Content-Type: application/json
+
+{
+  "id_film": 2,
+  "id_studio": 1,
+  "tanggal": "2026-01-25",
+  "jam_tayang": [
+    {
+      "jam_mulai": "12:00",
+      "jam_selesai": "14:30"
+    },
+    {
+      "jam_mulai": "21:00",
+      "jam_selesai": "23:30"
+    }
+  ]
+}
+
+### Get All Jadwal
+GET http://localhost:3000/api/jadwal

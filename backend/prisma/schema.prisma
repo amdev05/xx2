@@ -1,0 +1,386 @@
+// Prisma Schema for Cinema Management System
+// Schema lengkap berdasarkan ERD sistem bioskop
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MASTER DATA & LOOKUP TABLES
+// ============================================
+
+// Tipe Studio (Regular, IMAX, 4DX, Premium)
+model TipeStudio {
+  id_tipe_studio Int      @id @default(autoincrement())
+  tipe_studio    String   @unique @db.VarChar(50)
+  deskripsi      String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  studios     Studio[]
+  aturanHarga AturanHarga[]
+
+  @@map("tipeStudio")
+}
+
+// Tipe Hari (Weekday, Weekend, Holiday)
+model TipeHari {
+  id_tipe_hari Int      @id @default(autoincrement())
+  tipe_hari    String   @unique @db.VarChar(50)
+  deskripsi    String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  aturanHarga AturanHarga[]
+
+  @@map("tipeHari")
+}
+
+// Metode Pembayaran (Cash, Credit Card, E-Wallet, dll)
+model MetodePembayaran {
+  id_metode_pembayaran Int      @id @default(autoincrement())
+  metode_pembayaran    String   @unique @db.VarChar(100)
+  deskripsi            String?  @db.Text
+  aktif                Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  pembayarans Pembayaran[]
+
+  @@map("metodePembayaran")
+}
+
+// ============================================
+// LOCATION & VENUE MANAGEMENT
+// ============================================
+
+// Cabang Bioskop
+model Cabang {
+  id_cabang   Int      @id @default(autoincrement())
+  nama_cabang String   @db.VarChar(200)
+  alamat      String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  studios     Studio[]
+  aturanHarga AturanHarga[]
+
+  @@map("cabang")
+}
+
+// Studio di setiap cabang
+model Studio {
+  id_studio       Int      @id @default(autoincrement())
+  id_cabang       Int
+  no_studio       String   @db.VarChar(20)
+  id_tipe_studio  Int
+  kapasitas_total Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  cabang     Cabang     @relation(fields: [id_cabang], references: [id_cabang], onDelete: Cascade)
+  tipeStudio TipeStudio @relation(fields: [id_tipe_studio], references: [id_tipe_studio], onDelete: Restrict)
+  kursis     Kursi[]
+  jadwals    Jadwal[]
+
+  @@unique([id_cabang, no_studio])
+  @@index([id_cabang])
+  @@index([id_tipe_studio])
+  @@map("studio")
+}
+
+// Kursi di setiap studio
+model Kursi {
+  id_kursi  Int      @id @default(autoincrement())
+  id_studio Int
+  row_kursi String   @db.VarChar(5)
+  no_kursi  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  studio       Studio        @relation(fields: [id_studio], references: [id_studio], onDelete: Cascade)
+  statusKursis StatusKursi[]
+  tikets       Tiket[]
+
+  @@unique([id_studio, row_kursi, no_kursi])
+  @@index([id_studio])
+  @@map("kursi")
+}
+
+// ============================================
+// FILM & CONTENT MANAGEMENT
+// ============================================
+
+// Film
+model Film {
+  id_film        Int       @id @default(autoincrement())
+  nama_film      String    @db.VarChar(255)
+  durasi         Int // dalam menit
+  genre          String    @db.VarChar(100)
+  batas_umur     String    @db.VarChar(10) // SU, 13+, 17+, 21+
+  poster_url     String?   @db.Text
+  thumbnail_url  String?   @db.Text
+  logo_url       String?   @db.Text
+  trailer_url    String?   @db.Text
+  synopsis       String?   @db.Text
+  tanggal_rilis  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  jadwals     Jadwal[]
+  casts       Cast[]
+  productions Production[]
+
+  @@map("film")
+}
+
+// Cast & Crew
+model Cast {
+  id_cast   Int      @id @default(autoincrement())
+  id_film   Int
+  name      String   @db.VarChar(200)
+  role      String   @db.VarChar(200)
+  image_url String?  @db.Text
+  type      CastType @default(CAST)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  film Film @relation(fields: [id_film], references: [id_film], onDelete: Cascade)
+
+  @@index([id_film])
+  @@map("cast")
+}
+
+enum CastType {
+  CAST
+  CREW
+}
+
+// Production Company
+model Production {
+  id_production Int      @id @default(autoincrement())
+  id_film       Int
+  name          String   @db.VarChar(200)
+  image_url     String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  film Film @relation(fields: [id_film], references: [id_film], onDelete: Cascade)
+
+  @@index([id_film])
+  @@map("production")
+}
+
+// ============================================
+// SCHEDULE & SHOWTIME MANAGEMENT
+// ============================================
+
+// Jadwal Tayang
+model Jadwal {
+  id_jadwal   Int      @id @default(autoincrement())
+  id_film     Int
+  id_studio   Int
+  tanggal     DateTime @db.Date
+  jam_mulai   DateTime @db.Time(0)
+  jam_selesai DateTime @db.Time(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  film         Film          @relation(fields: [id_film], references: [id_film], onDelete: Cascade)
+  studio       Studio        @relation(fields: [id_studio], references: [id_studio], onDelete: Cascade)
+  statusKursis StatusKursi[]
+  tikets       Tiket[]
+
+  @@index([id_film])
+  @@index([id_studio])
+  @@index([tanggal])
+  @@map("jadwal")
+}
+
+// Status Kursi per Jadwal
+model StatusKursi {
+  id_status_kursi Int             @id @default(autoincrement())
+  id_jadwal       Int
+  id_kursi        Int
+  status_kursi    StatusKursiEnum @default(TERSEDIA)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relations
+  jadwal Jadwal @relation(fields: [id_jadwal], references: [id_jadwal], onDelete: Cascade)
+  kursi  Kursi  @relation(fields: [id_kursi], references: [id_kursi], onDelete: Cascade)
+
+  @@unique([id_jadwal, id_kursi])
+  @@index([id_jadwal])
+  @@index([id_kursi])
+  @@map("statusKursi")
+}
+
+enum StatusKursiEnum {
+  TERSEDIA
+  DIPESAN
+  TERJUAL
+}
+
+// ============================================
+// PRICING MANAGEMENT
+// ============================================
+
+// Aturan Harga berdasarkan Cabang, Tipe Studio, dan Tipe Hari
+model AturanHarga {
+  id_harga       Int      @id @default(autoincrement())
+  id_cabang      Int
+  id_tipe_studio Int
+  id_tipe_hari   Int
+  harga          Decimal  @db.Decimal(10, 2)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  cabang     Cabang     @relation(fields: [id_cabang], references: [id_cabang], onDelete: Cascade)
+  tipeStudio TipeStudio @relation(fields: [id_tipe_studio], references: [id_tipe_studio], onDelete: Cascade)
+  tipeHari   TipeHari   @relation(fields: [id_tipe_hari], references: [id_tipe_hari], onDelete: Cascade)
+
+  @@unique([id_cabang, id_tipe_studio, id_tipe_hari])
+  @@index([id_cabang])
+  @@index([id_tipe_studio])
+  @@index([id_tipe_hari])
+  @@map("aturanHarga")
+}
+
+// ============================================
+// USER & CUSTOMER MANAGEMENT
+// ============================================
+
+// Pelanggan / User
+model Pelanggan {
+  id_pelanggan   Int      @id @default(autoincrement())
+  nama_pelanggan String   @db.VarChar(200)
+  email          String   @unique @db.VarChar(200)
+  password       String   @db.VarChar(255)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tikets Tiket[]
+  orders Order[]
+
+  @@map("pelanggan")
+}
+
+// Admin
+model Admin {
+  id_admin   Int      @id @default(autoincrement())
+  nama_admin String   @db.VarChar(200)
+  email      String   @unique @db.VarChar(200)
+  password   String   @db.VarChar(255)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("admin")
+}
+
+// ============================================
+// BOOKING & TICKETING
+// ============================================
+
+// Order - untuk mengelompokkan tiket dalam satu transaksi
+model Order {
+  id_order       Int         @id @default(autoincrement())
+  kode_order     String      @unique @db.VarChar(50)
+  id_pelanggan   Int
+  total_harga    Decimal     @db.Decimal(10, 2)
+  biaya_layanan  Decimal     @default(2500) @db.Decimal(10, 2)
+  grand_total    Decimal     @db.Decimal(10, 2)
+  status_order   StatusOrder @default(PENDING)
+  waktu_order    DateTime    @default(now())
+  expired_at     DateTime // Payment deadline (15 minutes from order)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  pelanggan  Pelanggan   @relation(fields: [id_pelanggan], references: [id_pelanggan], onDelete: Cascade)
+  tikets     Tiket[]
+  pembayaran Pembayaran?
+
+  @@index([kode_order])
+  @@index([id_pelanggan])
+  @@map("order")
+}
+
+enum StatusOrder {
+  PENDING
+  PAID
+  EXPIRED
+  CANCELLED
+}
+
+// Pembayaran - record pembayaran untuk order
+model Pembayaran {
+  id_pembayaran        Int              @id @default(autoincrement())
+  id_order             Int              @unique
+  id_metode_pembayaran Int
+  jumlah_dibayar       Decimal          @db.Decimal(10, 2)
+  nomor_va             String?          @db.VarChar(50) // Virtual Account number
+  kode_qr              String?          @db.Text // QR code data
+  status_pembayaran    StatusPembayaran @default(PENDING)
+  waktu_pembayaran     DateTime?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  // Relations
+  order            Order            @relation(fields: [id_order], references: [id_order], onDelete: Cascade)
+  metodePembayaran MetodePembayaran @relation(fields: [id_metode_pembayaran], references: [id_metode_pembayaran], onDelete: Restrict)
+
+  @@index([id_order])
+  @@map("pembayaran")
+}
+
+enum StatusPembayaran {
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
+}
+
+// Tiket
+model Tiket {
+  id_tiket        Int         @id @default(autoincrement())
+  kode_tiket      String      @unique @db.VarChar(50)
+  id_order        Int? // Nullable for backward compatibility
+  id_jadwal       Int
+  id_kursi        Int
+  id_pelanggan    Int
+  harga_final     Decimal     @db.Decimal(10, 2)
+  waktu_pembelian DateTime    @default(now())
+  status_tiket    StatusTiket @default(PENDING)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  order     Order?    @relation(fields: [id_order], references: [id_order], onDelete: SetNull)
+  jadwal    Jadwal    @relation(fields: [id_jadwal], references: [id_jadwal], onDelete: Cascade)
+  kursi     Kursi     @relation(fields: [id_kursi], references: [id_kursi], onDelete: Restrict)
+  pelanggan Pelanggan @relation(fields: [id_pelanggan], references: [id_pelanggan], onDelete: Cascade)
+
+  @@index([kode_tiket])
+  @@index([id_pelanggan])
+  @@index([id_jadwal])
+  @@index([id_kursi])
+  @@index([id_order])
+  @@map("tiket")
+}
+
+enum StatusTiket {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
